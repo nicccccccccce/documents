@@ -1,0 +1,75 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'signing' //使用signing plugin做数字签名
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+install {
+    repositories.mavenInstaller {
+        //为Pom文件做数字签名
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        // This generates POM.xml with proper parameters
+//        pom.groupId = POM_GROUPID
+//        pom.artifactId = POM_ARTIFACT_ID
+//        pom.version = VERSION_NAME
+        pom.project {
+            packaging POM_PACKAING
+            name project.name
+            description POM_DESCRIPTION
+            url siteUrl
+            // Set your license
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id DEVELOPER_ID      //填写开发者基本信息
+                    name DEVELOPER_NAME
+                    email DEVELOPER_EMAIL
+                }
+            }
+            scm {
+                connection gitUrl
+                developerConnection gitUrl
+                url siteUrl
+            }
+        }
+    }
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    configurations = ['archives']
+    pkg {
+        repo = "maven"  //发布到Bintray的那个仓库里，默认账户有四个库，我们这里上传到maven库
+        name = PUSH_NAME//发布到Bintray上的项目名字
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
+signing {
+    sign configurations.archives
+}
