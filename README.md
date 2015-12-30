@@ -42,37 +42,65 @@ POM_DESCRIPTION=Android Commonly used utils
 PUSH_NAME=android-rippleView
 >
 ###项目根中build.gradle配置
->buildscript {
-> repositories {
->//        jcenter()
- >       jcenter {
-  >          url "http://jcenter.bintray.com/"
- >       }
 >
->    }
->    dependencies {
->        classpath 'com.android.tools.build:gradle:1.2.3'
->        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
- >       classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+buildscript {
+>
+repositories {
+>
+//        jcenter()
+ >
+ jcenter {
+  >
+  url "http://jcenter.bintray.com/"
+ > 
+ }
+>
 
->        // NOTE: Do not place your application dependencies here; they belong
- >       // in the individual module build.gradle files
+>
+}
+> 
+dependencies {
+>  
+classpath 'com.android.tools.build:gradle:1.2.3'
+>  
+classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
+ >  
+ classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+
+>  
+// NOTE: Do not place your application dependencies here; they belong
+ > 
+ // in the individual module build.gradle files
 
 
->    }
->}
+> 
+}
+>
+}
 
->allprojects {
- >   repositories {
->//        jcenter()
->        maven  {
->            url "http://repo1.maven.org/maven2"
->        }
->    }
->}
+>
+allprojects {
+ > 
+ repositories {
+>
+//        jcenter()
+> 
+maven  {
+> 
+url "http://repo1.maven.org/maven2"
+> 
+}
+> 
+}
+>
+}
 ###modules中build.gradle
->apply plugin: 'com.android.library'
->version ="1.0.2"
->group ="com.github.nicccccccccce.rippleview"
->//apply from: 'gradle-bintray-push.gradle'
+>
+apply plugin: 'com.android.library'
+>
+version ="1.0.2"
+>
+group ="com.github.nicccccccccce.rippleview"
+>
+//apply from: 'gradle-bintray-push.gradle'
 
