@@ -1,0 +1,60 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+        //即使报错也不会停止打包
+        checkReleaseBuilds false
+        //打包release版本的时候进行检测
+    }
+}
+
+def SDK_BASENAME = "antifraud";
+def SDK_VERSION = "-1.0";
+def sdkDestinationPath = "build";
+def zipFile = file('build/intermediates/bundles/release/classes.jar')
+
+task deleteBuild(type: Delete) {
+    delete sdkDestinationPath + "/" + SDK_BASENAME + SDK_VERSION + ".jar"
+}
+
+task makeJar(type: Jar) {
+    from zipTree(zipFile)
+    from fileTree(dir: 'src/main', includes: ['assets/**'])
+    baseName = SDK_BASENAME + SDK_VERSION
+//    from(project.zipTree('libs/commons-codec-1.10.jar'))
+    //去掉不要的类
+    exclude('com/haukit/hnblife/antifraud/BuildConfig.class')
+    exclude('com/haukit/hnblife/antifraud/BuildConfig\$*.class')
+    exclude('**/R.class')
+    exclude('**/R\$*.class')
+    exclude('org/**')
+    destinationDir = file(sdkDestinationPath)
+
+}
+makeJar.dependsOn(deleteBuild, build)
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    testCompile 'junit:junit:4.12'
+}
